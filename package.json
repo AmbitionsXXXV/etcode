@@ -1,0 +1,20 @@
+{
+	"$schema": "https://json.schemastore.org/package.json",
+	"name": "etcode",
+	"description": "AI-powered CLI code agent",
+	"private": true,
+	"type": "module",
+	"packageManager": "pnpm@10.30.2+sha512.36cdc707e7b7940a988c9c1ecf88d084f8514b5c3f085f53a2e244c2921d3b2545bc20dd4ebe1fc245feec463bb298aecea7a63ed1f7680b877dc6379d8d0cb4",
+	"scripts": {
+		"dev": "tsx packages/etcode/src/index.ts",
+		"typecheck": "turbo typecheck",
+		"build": "turbo build",
+		"test": "echo 'do-not-run-tests-from-root' && exit 1"
+	},
+	"devDependencies": {
+		"turbo": "^2.8.11",
+		"typescript": "^5.9.3",
+		"tsx": "^4.19.0",
+		"@biomejs/biome": "^2.4.4"
+	}
+}
