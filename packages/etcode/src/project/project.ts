@@ -12,6 +12,7 @@ export namespace Project {
     name: z.string(),
     directory: z.string(),
     gitRoot: z.string().optional(),
+    vcs: z.enum(["git", "none"]).default("none"),
     time: z.object({
       created: z.number(),
       updated: z.number(),
@@ -31,6 +32,7 @@ export namespace Project {
       name,
       directory: resolved,
       gitRoot: gitDir ? root : undefined,
+      vcs: gitDir ? "git" : "none",
       time: { created: now, updated: now },
     }
   }

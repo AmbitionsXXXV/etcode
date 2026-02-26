@@ -34,6 +34,7 @@ export namespace Config {
     default_agent: z.string().optional(),
     agent: z.record(z.string(), AgentConfig).default({}),
     permission: Permission.ConfigSchema.optional(),
+    instructions: z.array(z.string()).optional(),
     limits: z.object({
       maxTokens: z.number().default(4096),
       maxSteps: z.number().default(50),

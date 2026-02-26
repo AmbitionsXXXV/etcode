@@ -9,6 +9,8 @@
 		"dev": "tsx packages/etcode/src/index.ts",
 		"typecheck": "turbo typecheck",
 		"build": "turbo build",
+		"check": "ultracite check",
+    "check:fix": "ultracite fix",
 		"test": "echo 'do-not-run-tests-from-root' && exit 1"
 	},
 	"devDependencies": {

@@ -48,4 +48,21 @@ export namespace Filesystem {
       current = parent
     }
   }
+
+  export async function findUpAll(filenames: string[], from: string, root?: string): Promise<string[]> {
+    const results: string[] = []
+    const stop = root ? path.resolve(root) : undefined
+    let current = path.resolve(from)
+    while (true) {
+      for (const filename of filenames) {
+        const candidate = path.join(current, filename)
+        if (await exists(candidate)) results.push(candidate)
+      }
+      if (stop && current === stop) break
+      const parent = path.dirname(current)
+      if (parent === current) break
+      current = parent
+    }
+    return results
+  }
 }
