@@ -1,0 +1,8 @@
+Generate a short, descriptive title for this conversation based on the user's first message and the assistant's response.
+
+Rules:
+- Maximum 60 characters
+- Use sentence case
+- Focus on the main topic or task
+- Do not use quotes or special formatting
+- Return only the title text, nothing else

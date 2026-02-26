@@ -1,0 +1,9 @@
+Generate a concise summary of this conversation.
+
+Rules:
+- Capture the main topics discussed
+- Note key decisions and outcomes
+- List any files modified or created
+- Mention unresolved items if any
+- Keep the summary under 200 words
+- Return only the summary text, nothing else

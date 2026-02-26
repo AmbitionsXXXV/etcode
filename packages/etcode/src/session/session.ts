@@ -12,6 +12,7 @@ export namespace Session {
     title: z.string(),
     projectID: z.string(),
     directory: z.string(),
+    agent: z.string().optional(),
     time: z.object({
       created: z.number(),
       updated: z.number(),
@@ -29,13 +30,14 @@ export namespace Session {
     return [projectID, "session", id]
   }
 
-  export async function create(input: { projectID: string; directory: string; title?: string }) {
+  export async function create(input: { projectID: string; directory: string; title?: string; agent?: string }) {
     const now = Date.now()
     const session: Info = {
       id: Identifier.ascending("sess"),
       title: input.title ?? "New Session",
       projectID: input.projectID,
       directory: input.directory,
+      agent: input.agent,
       time: { created: now, updated: now },
     }
     await storage.write(key(input.projectID, session.id), session)

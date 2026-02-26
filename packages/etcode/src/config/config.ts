@@ -1,4 +1,5 @@
 import z from "zod"
+import { Permission } from "../permission/permission"
 import { Filesystem } from "../util/filesystem"
 import { Global } from "../global"
 import path from "path"
@@ -14,12 +15,29 @@ export namespace Config {
     model: z.string().optional(),
   })
 
+  export const AgentConfig = z.object({
+    model: z.string().optional(),
+    prompt: z.string().optional(),
+    description: z.string().optional(),
+    temperature: z.number().optional(),
+    top_p: z.number().optional(),
+    mode: z.enum(["primary", "subagent", "all"]).optional(),
+    hidden: z.boolean().optional(),
+    permission: Permission.ConfigSchema.optional(),
+    steps: z.number().int().positive().optional(),
+    disable: z.boolean().optional(),
+  })
+  export type AgentConfig = z.infer<typeof AgentConfig>
+
   export const Info = z.object({
     provider: z.array(Provider).default([]),
-    agent: z.object({
+    default_agent: z.string().optional(),
+    agent: z.record(z.string(), AgentConfig).default({}),
+    permission: Permission.ConfigSchema.optional(),
+    limits: z.object({
       maxTokens: z.number().default(4096),
       maxSteps: z.number().default(50),
-    }).default({}),
+    }).default({ maxTokens: 4096, maxSteps: 50 }),
   })
   export type Info = z.infer<typeof Info>
 
