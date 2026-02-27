@@ -43,6 +43,11 @@ export namespace Config {
       maxTokens: z.number().default(4096),
       maxSteps: z.number().default(50),
     }).default({ maxTokens: 4096, maxSteps: 50 }),
+    experimental: z.object({
+      batch_tool: z.boolean().optional(),
+      websearch: z.boolean().optional(),
+      plan_mode: z.boolean().optional(),
+    }).optional(),
   })
   export type Info = z.infer<typeof Info>
 

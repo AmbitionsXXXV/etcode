@@ -1,3 +1,4 @@
+import path from "path"
 import { Context } from "../util/context"
 import { Project } from "./project"
 
@@ -23,5 +24,12 @@ export namespace Instance {
 
   export function project() {
     return context.use().project
+  }
+
+  export function containsPath(target: string): boolean {
+    const dir = directory()
+    const resolved = path.resolve(target)
+    const base = path.resolve(dir)
+    return resolved === base || resolved.startsWith(base + path.sep)
   }
 }

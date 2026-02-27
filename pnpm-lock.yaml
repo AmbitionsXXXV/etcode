@@ -23,10 +23,22 @@ importers:
       ai:
         specifier: ^6.0.103
         version: 6.0.103(zod@4.3.6)
+      diff:
+        specifier: ^8.0.3
+        version: 8.0.3
+      turndown:
+        specifier: ^7.2.2
+        version: 7.2.2
     devDependencies:
       '@biomejs/biome':
         specifier: ^2.4.4
         version: 2.4.4
+      '@types/diff':
+        specifier: ^7.0.2
+        version: 7.0.2
+      '@types/turndown':
+        specifier: ^5.0.6
+        version: 5.0.6
       tsx:
         specifier: ^4.19.0
         version: 4.21.0
@@ -57,6 +69,12 @@ importers:
       ai:
         specifier: ^6.0.103
         version: 6.0.103(zod@4.3.6)
+      diff:
+        specifier: ^8.0.3
+        version: 8.0.3
+      turndown:
+        specifier: ^7.2.2
+        version: 7.2.2
       xdg-basedir:
         specifier: ^5.1.0
         version: 5.1.0
@@ -67,9 +85,15 @@ importers:
         specifier: ^4.3.6
         version: 4.3.6
     devDependencies:
+      '@types/diff':
+        specifier: ^8.0.0
+        version: 8.0.0
       '@types/node':
         specifier: ^25.3.0
         version: 25.3.0
+      '@types/turndown':
+        specifier: ^5.0.6
+        version: 5.0.6
       '@types/yargs':
         specifier: ^17.0.35
         version: 17.0.35
@@ -351,6 +375,9 @@ packages:
   '@jridgewell/sourcemap-codec@1.5.5':
     resolution: {integrity: sha512-cYQ9310grqxueWbl+WuIUIaiUaDcj7WOq5fVhEljNVgRfOUhY9fy2zTvfoqWsnebh8Sl70VScFbICvJnLKB0Og==}
 
+  '@mixmark-io/domino@2.2.0':
+    resolution: {integrity: sha512-Y28PR25bHXUg88kCV7nivXrP2Nj2RueZ3/l/jdx6J9f8J4nsEGcgX0Qe6lt7Pa+J79+kPiJU3LguR6O/6zrLOw==}
+
   '@opentelemetry/api@1.9.0':
     resolution: {integrity: sha512-3giAOQvZiH5F9bMlMiv8+GSPMeqg0dbaeo58/0SlA9sxSqZhnUtxzX9/2FzyhS9sWQf5S0GJE0AKBrFqjpeYcg==}
     engines: {node: '>=8.0.0'}
@@ -502,6 +529,13 @@ packages:
   '@types/deep-eql@4.0.2':
     resolution: {integrity: sha512-c9h9dVVMigMPc4bwTvC5dxqtqJZwQPePsWjPlpSOnojbor6pGqdk541lfA7AqFQr5pB1BRdq0juY9db81BwyFw==}
 
+  '@types/diff@7.0.2':
+    resolution: {integrity: sha512-JSWRMozjFKsGlEjiiKajUjIJVKuKdE3oVy2DNtK+fUo8q82nhFZ2CPQwicAIkXrofahDXrWJ7mjelvZphMS98Q==}
+
+  '@types/diff@8.0.0':
+    resolution: {integrity: sha512-o7jqJM04gfaYrdCecCVMbZhNdG6T1MHg/oQoRFdERLV+4d+V7FijhiEAbFu0Usww84Yijk9yH58U4Jk4HbtzZw==}
+    deprecated: This is a stub types definition. diff provides its own type definitions, so you do not need this installed.
+
   '@types/estree@1.0.8':
     resolution: {integrity: sha512-dWHzHa2WqEXI/O1E9OjrocMTKJl2mSrEolh1Iomrv6U+JuNwaHXsXx9bLu5gG7BUWFIN0skIQJQ/L1rIex4X6w==}
 
@@ -510,6 +544,9 @@ packages:
 
   '@types/node@25.3.0':
     resolution: {integrity: sha512-4K3bqJpXpqfg2XKGK9bpDTc6xO/xoUP/RBWS7AtRMug6zZFaRekiLzjVtAoZMquxoAbzBvy5nxQ7veS5eYzf8A==}
+
+  '@types/turndown@5.0.6':
+    resolution: {integrity: sha512-ru00MoyeeouE5BX4gRL+6m/BsDfbRayOskWqUvh7CLGW+UXxHQItqALa38kKnOiZPqJrtzJUgAC2+F0rL1S4Pg==}
 
   '@types/yargs-parser@21.0.3':
     resolution: {integrity: sha512-I4q9QU9MQv4oEOz4tAHJtNz1cwuLxn2F3xcc2iV5WdqLPpUnj30aUuxt1mAxYTG+oe8CZMV/+6rU4S4gRDzqtQ==}
@@ -575,6 +612,10 @@ packages:
   cliui@9.0.1:
     resolution: {integrity: sha512-k7ndgKhwoQveBL+/1tqGJYNz097I7WOvwbmmU2AR5+magtbjPWQTS1C5vzGkBC8Ym8UWRzfKUzUUqFLypY4Q+w==}
     engines: {node: '>=20'}
+
+  diff@8.0.3:
+    resolution: {integrity: sha512-qejHi7bcSD4hQAZE0tNAawRK1ZtafHDmMTMkrrIGgSLl7hTnQHmKCeB45xAcbfTqK2zowkM3j3bHt/4b/ARbYQ==}
+    engines: {node: '>=0.3.1'}
 
   emoji-regex@10.6.0:
     resolution: {integrity: sha512-toUI84YS5YmxW219erniWD0CIVOo46xGKColeNQRgOzDorgBi1v4D71/OFzgD9GO2UGKIv1C3Sp8DAn0+j5w7A==}
@@ -737,6 +778,9 @@ packages:
   turbo@2.8.11:
     resolution: {integrity: sha512-H+rwSHHPLoyPOSoHdmI1zY0zy0GGj1Dmr7SeJW+nZiWLz2nex8EJ+fkdVabxXFMNEux+aywI4Sae8EqhmnOv4A==}
     hasBin: true
+
+  turndown@7.2.2:
+    resolution: {integrity: sha512-1F7db8BiExOKxjSMU2b7if62D/XOyQyZbPKq/nUwopfgnHlqXHqQ0lvfUTeUIr1lZJzOPFn43dODyMSIfvWRKQ==}
 
   typescript@5.9.3:
     resolution: {integrity: sha512-jl1vZzPDinLr9eUt3J/t7V6FgNEw9QjvBPdysz9KfQDD41fQrC2Y4vKQdiaUpFT4bXlb1RHhLpp8wtm6M5TgSw==}
@@ -1013,6 +1057,8 @@ snapshots:
 
   '@jridgewell/sourcemap-codec@1.5.5': {}
 
+  '@mixmark-io/domino@2.2.0': {}
+
   '@opentelemetry/api@1.9.0': {}
 
   '@rollup/rollup-android-arm-eabi@4.59.0':
@@ -1099,6 +1145,12 @@ snapshots:
 
   '@types/deep-eql@4.0.2': {}
 
+  '@types/diff@7.0.2': {}
+
+  '@types/diff@8.0.0':
+    dependencies:
+      diff: 8.0.3
+
   '@types/estree@1.0.8': {}
 
   '@types/node@22.19.11':
@@ -1108,6 +1160,8 @@ snapshots:
   '@types/node@25.3.0':
     dependencies:
       undici-types: 7.18.2
+
+  '@types/turndown@5.0.6': {}
 
   '@types/yargs-parser@21.0.3': {}
 
@@ -1177,6 +1231,8 @@ snapshots:
       string-width: 7.2.0
       strip-ansi: 7.1.2
       wrap-ansi: 9.0.2
+
+  diff@8.0.3: {}
 
   emoji-regex@10.6.0: {}
 
@@ -1353,6 +1409,10 @@ snapshots:
       turbo-linux-arm64: 2.8.11
       turbo-windows-64: 2.8.11
       turbo-windows-arm64: 2.8.11
+
+  turndown@7.2.2:
+    dependencies:
+      '@mixmark-io/domino': 2.2.0
 
   typescript@5.9.3: {}
 
