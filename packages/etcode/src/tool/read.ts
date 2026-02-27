@@ -4,7 +4,9 @@ import * as fs from "fs/promises"
 import * as path from "path"
 import { createInterface } from "readline"
 import { Tool } from "./tool"
-import DESCRIPTION from "./read.txt"
+import { loadDescription } from "./description"
+
+const DESCRIPTION = loadDescription("read.txt")
 import { Instance } from "../project/instance"
 import { assertExternalDirectory } from "./external-directory"
 import { Filesystem } from "../util/filesystem"

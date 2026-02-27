@@ -1,6 +1,8 @@
 import z from "zod"
 import { Tool } from "./tool"
-import DESCRIPTION from "./question.txt"
+import { loadDescription } from "./description"
+
+const DESCRIPTION = loadDescription("question.txt")
 
 const QuestionOption = z.object({
   label: z.string(),

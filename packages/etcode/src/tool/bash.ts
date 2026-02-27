@@ -1,7 +1,9 @@
 import z from "zod"
 import { spawn } from "child_process"
 import { Tool } from "./tool"
-import DESCRIPTION from "./bash.txt"
+import { loadDescription } from "./description"
+
+const DESCRIPTION = loadDescription("bash.txt")
 import { Instance } from "../project/instance"
 import { Truncate } from "./truncation"
 import { Log } from "../util/log"

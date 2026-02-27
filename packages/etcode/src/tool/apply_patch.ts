@@ -7,7 +7,9 @@ import { createTwoFilesPatch, diffLines } from "diff"
 import { assertExternalDirectory } from "./external-directory"
 import { trimDiff } from "./edit"
 import { Filesystem } from "../util/filesystem"
-import DESCRIPTION from "./apply_patch.txt"
+import { loadDescription } from "./description"
+
+const DESCRIPTION = loadDescription("apply_patch.txt")
 
 interface PatchHunk {
   type: "add" | "update" | "delete"

@@ -1,6 +1,8 @@
 import z from "zod"
 import { Tool } from "./tool"
-import DESCRIPTION_WRITE from "./todowrite.txt"
+import { loadDescription } from "./description"
+
+const DESCRIPTION_WRITE = loadDescription("todowrite.txt")
 import { createJsonStorage } from "../storage/json"
 
 const storage = createJsonStorage()

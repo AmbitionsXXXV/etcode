@@ -1,6 +1,8 @@
 import z from "zod"
 import { Tool } from "./tool"
-import EXIT_DESCRIPTION from "./plan-exit.txt"
+import { loadDescription } from "./description"
+
+const EXIT_DESCRIPTION = loadDescription("plan-exit.txt")
 
 export const PlanExitTool = Tool.define("plan_exit", {
   description: EXIT_DESCRIPTION,

@@ -1,5 +1,7 @@
 import { Tool } from "./tool"
-import DESCRIPTION from "./task.txt"
+import { loadDescription } from "./description"
+
+const DESCRIPTION = loadDescription("task.txt")
 import z from "zod"
 import { Agent } from "../agent/agent"
 import { Permission } from "../permission/permission"

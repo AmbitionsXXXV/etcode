@@ -4,7 +4,9 @@ import { spawn } from "child_process"
 import { text } from "node:stream/consumers"
 import { Tool } from "./tool"
 import { Filesystem } from "../util/filesystem"
-import DESCRIPTION from "./glob.txt"
+import { loadDescription } from "./description"
+
+const DESCRIPTION = loadDescription("glob.txt")
 import { Instance } from "../project/instance"
 import { assertExternalDirectory } from "./external-directory"
 

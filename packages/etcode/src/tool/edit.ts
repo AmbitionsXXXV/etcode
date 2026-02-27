@@ -2,7 +2,9 @@ import z from "zod"
 import * as path from "path"
 import { Tool } from "./tool"
 import { createTwoFilesPatch, diffLines } from "diff"
-import DESCRIPTION from "./edit.txt"
+import { loadDescription } from "./description"
+
+const DESCRIPTION = loadDescription("edit.txt")
 import { Filesystem } from "../util/filesystem"
 import { Instance } from "../project/instance"
 import { assertExternalDirectory } from "./external-directory"

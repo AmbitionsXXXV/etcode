@@ -1,6 +1,8 @@
 import z from "zod"
 import { Tool } from "./tool"
-import DESCRIPTION from "./batch.txt"
+import { loadDescription } from "./description"
+
+const DESCRIPTION = loadDescription("batch.txt")
 
 const DISALLOWED = new Set(["batch"])
 

@@ -2,9 +2,8 @@ import z from "zod"
 import { Identifier } from "@etcode/util/identifier"
 import { BusEvent } from "../bus/bus-event"
 import { Bus } from "../bus"
-import { createJsonStorage } from "../storage/json"
-
-const storage = createJsonStorage()
+import { Database, eq, desc } from "../storage/db"
+import { SessionTable } from "./session.sql"
 
 export namespace Session {
   export const Info = z.object({
@@ -24,44 +23,76 @@ export namespace Session {
     Created: BusEvent.define("session.created", Info),
     Updated: BusEvent.define("session.updated", Info),
     Deleted: BusEvent.define("session.deleted", z.object({ id: z.string() })),
+    Error: BusEvent.define("session.error", z.object({
+      sessionID: z.string(),
+      error: z.unknown(),
+    })),
   }
 
-  function key(projectID: string, id: string) {
-    return [projectID, "session", id]
+  function fromRow(row: typeof SessionTable.$inferSelect): Info {
+    return {
+      id: row.id,
+      title: row.title,
+      projectID: row.project_id,
+      directory: row.directory,
+      agent: row.agent ?? undefined,
+      time: { created: row.time_created, updated: row.time_updated },
+    }
   }
 
   export async function create(input: { projectID: string; directory: string; title?: string; agent?: string }) {
     const now = Date.now()
+    const id = Identifier.ascending("sess")
+    Database.use((db) => {
+      db.insert(SessionTable).values({
+        id,
+        project_id: input.projectID,
+        directory: input.directory,
+        title: input.title ?? "New Session",
+        agent: input.agent,
+        time_created: now,
+        time_updated: now,
+      }).run()
+    })
     const session: Info = {
-      id: Identifier.ascending("sess"),
+      id,
       title: input.title ?? "New Session",
       projectID: input.projectID,
       directory: input.directory,
       agent: input.agent,
       time: { created: now, updated: now },
     }
-    await storage.write(key(input.projectID, session.id), session)
     await Bus.publish(Event.Created, session)
     return session
   }
 
   export async function get(projectID: string, id: string) {
-    return storage.read<Info>(key(projectID, id))
+    return Database.use((db) => {
+      const row = db.select().from(SessionTable)
+        .where(eq(SessionTable.id, id))
+        .get()
+      if (!row || row.project_id !== projectID) return undefined
+      return fromRow(row)
+    })
   }
 
   export async function list(projectID: string) {
-    const ids = await storage.list([projectID, "session"])
-    const sessions: Info[] = []
-    for (const id of ids) {
-      const session = await get(projectID, id)
-      if (session) sessions.push(session)
-    }
-    return sessions.sort((a, b) => b.time.updated - a.time.updated)
+    return Database.use((db) => {
+      const rows = db.select().from(SessionTable)
+        .where(eq(SessionTable.project_id, projectID))
+        .orderBy(desc(SessionTable.time_updated))
+        .all()
+      return rows.map(fromRow)
+    })
   }
 
   export async function touch(projectID: string, id: string) {
-    await storage.update<Info>(key(projectID, id), (draft) => {
-      draft.time.updated = Date.now()
+    const now = Date.now()
+    Database.use((db) => {
+      db.update(SessionTable)
+        .set({ time_updated: now })
+        .where(eq(SessionTable.id, id))
+        .run()
     })
     const session = await get(projectID, id)
     if (session) await Bus.publish(Event.Updated, session)
@@ -69,9 +100,12 @@ export namespace Session {
   }
 
   export async function setTitle(projectID: string, id: string, title: string) {
-    await storage.update<Info>(key(projectID, id), (draft) => {
-      draft.title = title
-      draft.time.updated = Date.now()
+    const now = Date.now()
+    Database.use((db) => {
+      db.update(SessionTable)
+        .set({ title, time_updated: now })
+        .where(eq(SessionTable.id, id))
+        .run()
     })
     const session = await get(projectID, id)
     if (session) await Bus.publish(Event.Updated, session)
@@ -79,7 +113,11 @@ export namespace Session {
   }
 
   export async function remove(projectID: string, id: string) {
-    await storage.remove(key(projectID, id))
+    Database.use((db) => {
+      db.delete(SessionTable)
+        .where(eq(SessionTable.id, id))
+        .run()
+    })
     await Bus.publish(Event.Deleted, { id })
   }
 }

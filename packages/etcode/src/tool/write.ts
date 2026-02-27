@@ -2,7 +2,9 @@ import z from "zod"
 import * as path from "path"
 import { Tool } from "./tool"
 import { createTwoFilesPatch } from "diff"
-import DESCRIPTION from "./write.txt"
+import { loadDescription } from "./description"
+
+const DESCRIPTION = loadDescription("write.txt")
 import { Filesystem } from "../util/filesystem"
 import { Instance } from "../project/instance"
 import { trimDiff } from "./edit"

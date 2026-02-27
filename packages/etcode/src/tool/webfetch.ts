@@ -1,7 +1,9 @@
 import z from "zod"
 import { Tool } from "./tool"
 import TurndownService from "turndown"
-import DESCRIPTION from "./webfetch.txt"
+import { loadDescription } from "./description"
+
+const DESCRIPTION = loadDescription("webfetch.txt")
 
 const MAX_RESPONSE_SIZE = 5 * 1024 * 1024
 const DEFAULT_TIMEOUT = 30 * 1000

@@ -29,5 +29,11 @@
 		"ai": "^6.0.103",
 		"diff": "^8.0.3",
 		"turndown": "^7.2.2"
+	},
+	"pnpm": {
+		"onlyBuiltDependencies": [
+			"better-sqlite3",
+			"esbuild"
+		]
 	}
 }

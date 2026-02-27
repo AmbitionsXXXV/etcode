@@ -2,24 +2,26 @@ import type { Argv } from "yargs"
 import { cmd } from "./cmd"
 import { bootstrap } from "../bootstrap"
 import { Session } from "../../session/session"
-import { Message } from "../../session/message"
 import { Instance } from "../../project/instance"
 import { Agent } from "../../agent/agent"
 import { Bus } from "../../bus"
+import { Part } from "../../session/part"
+import { Prompt } from "../../session/prompt"
 import { UI } from "../ui"
 import { Log } from "../../util/log"
 
 const log = Log.create("run")
 
 export const RunCommand = cmd({
-  command: "run [message..]",
-  describe: "run etcode with a message",
+  command: "run <message..>",
+  describe: "run etcode non-interactively with a message",
   builder: (yargs: Argv) =>
     yargs
       .positional("message", {
-        describe: "initial message to send",
+        describe: "message to send",
         type: "string",
         array: true,
+        demandOption: true,
       })
       .option("continue", {
         alias: ["c"],
@@ -64,26 +66,54 @@ export const RunCommand = cmd({
         })
       }
 
-      const text = args.message?.join(" ")
-      if (text) {
-        await Message.create(project.id, {
-          sessionID: session.id,
-          role: "user",
-          content: text,
-        })
-      }
-
-      log.info("session ready", { id: session.id, agent: agent.name })
-
-      Bus.subscribe(Session.Event.Updated, (event) => {
-        log.debug("session updated", { id: event.properties.id })
-      })
-
       console.log(`Session: ${session.id}`)
       console.log(`Project: ${project.name} (${project.directory})`)
       console.log(`Agent:   ${UI.cyan(agent.name)}${agent.description ? UI.dim(` — ${agent.description}`) : ""}`)
-      if (text) console.log(`Message: ${text}`)
-      console.log(UI.dim("Agent ready. (agent loop not yet implemented)"))
+
+      const text = args.message.join(" ")
+
+      console.log(`${UI.dim(">")} ${text}`)
+      console.log()
+
+      Bus.subscribe(Part.Event.Delta, (event) => {
+        if (event.properties.sessionID === session!.id && event.properties.field === "text") {
+          process.stdout.write(event.properties.delta)
+        }
+      })
+
+      Bus.subscribe(Part.Event.Updated, (event) => {
+        const part = event.properties
+        if (part.type === "tool") {
+          if (part.state.status === "running") {
+            console.log(`\n${UI.cyan("⟡")} ${UI.bold(part.tool)} ${UI.dim("running...")}`)
+          } else if (part.state.status === "completed") {
+            const title = part.state.title ?? part.tool
+            console.log(`${UI.green("✓")} ${title}`)
+          } else if (part.state.status === "failed") {
+            console.log(`${UI.red("✗")} ${part.tool}: ${UI.red(part.state.error ?? "failed")}`)
+          }
+        }
+      })
+
+      Bus.subscribe(Session.Event.Error, (event) => {
+        if (event.properties.sessionID === session!.id) {
+          console.error(`\n${UI.red("Error:")} ${event.properties.error}`)
+        }
+      })
+
+      log.info("starting agent loop", { id: session.id, agent: agent.name })
+
+      const result = await Prompt.prompt({
+        projectID: project.id,
+        sessionID: session.id,
+        content: text,
+        agent: agent.name,
+      })
+
+      console.log()
+      if (result && result.role === "assistant" && result.tokens) {
+        console.log(UI.dim(`[tokens: in=${result.tokens.input} out=${result.tokens.output}]`))
+      }
     })
   },
 })

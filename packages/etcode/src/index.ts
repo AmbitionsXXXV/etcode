@@ -1,6 +1,7 @@
 import yargs from "yargs"
 import { hideBin } from "yargs/helpers"
 import { RunCommand } from "./cli/cmd/run"
+import { TuiCommand } from "./cli/cmd/tui-cmd"
 import { UI } from "./cli/ui"
 import { Log } from "./util/log"
 
@@ -30,6 +31,7 @@ const cli = yargs(hideBin(process.argv))
     })
   })
   .usage("\n" + UI.logo())
+  .command(TuiCommand)
   .command(RunCommand)
   .demandCommand(0)
   .strict()
@@ -41,6 +43,4 @@ try {
     console.error(UI.red(`Error: ${e.message}`))
   }
   process.exit(1)
-} finally {
-  process.exit(0)
 }
