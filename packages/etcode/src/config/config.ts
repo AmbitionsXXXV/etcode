@@ -10,10 +10,14 @@ const log = Log.create("config")
 export namespace Config {
   export const Provider = z.object({
     id: z.string(),
+    npm: z.string().default("@ai-sdk/openai-compatible"),
+    api: z.string().optional(),
+    env: z.array(z.string()).default([]),
     apiKey: z.string().optional(),
     baseURL: z.string().optional(),
     model: z.string().optional(),
   })
+  export type Provider = z.infer<typeof Provider>
 
   export const AgentConfig = z.object({
     model: z.string().optional(),

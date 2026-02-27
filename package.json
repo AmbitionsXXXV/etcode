@@ -10,13 +10,20 @@
 		"typecheck": "turbo typecheck",
 		"build": "turbo build",
 		"check": "ultracite check",
-    "check:fix": "ultracite fix",
+		"check:fix": "ultracite fix",
 		"test": "echo 'do-not-run-tests-from-root' && exit 1"
 	},
 	"devDependencies": {
-		"turbo": "^2.8.11",
-		"typescript": "^5.9.3",
+		"@biomejs/biome": "^2.4.4",
 		"tsx": "^4.19.0",
-		"@biomejs/biome": "^2.4.4"
+		"turbo": "^2.8.11",
+		"typescript": "^5.9.3"
+	},
+	"dependencies": {
+		"@ai-sdk/anthropic": "^3.0.47",
+		"@ai-sdk/google": "^3.0.32",
+		"@ai-sdk/openai": "^3.0.35",
+		"@ai-sdk/openai-compatible": "^2.0.30",
+		"ai": "^6.0.103"
 	}
 }
