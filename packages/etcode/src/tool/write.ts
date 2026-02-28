@@ -1,45 +1,52 @@
-import z from "zod"
-import * as path from "path"
-import { Tool } from "./tool"
-import { createTwoFilesPatch } from "diff"
-import { loadDescription } from "./description"
+import * as path from 'node:path'
+import { createTwoFilesPatch } from 'diff'
+import z from 'zod'
+import { loadDescription } from './description'
+import { Tool } from './tool'
 
-const DESCRIPTION = loadDescription("write.txt")
-import { Filesystem } from "../util/filesystem"
-import { Instance } from "../project/instance"
-import { trimDiff } from "./edit"
-import { assertExternalDirectory } from "./external-directory"
+const DESCRIPTION = loadDescription('write.txt')
 
-export const WriteTool = Tool.define("write", {
-  description: DESCRIPTION,
-  parameters: z.object({
-    content: z.string().describe("The content to write to the file"),
-    filePath: z.string().describe("The absolute path to the file to write (must be absolute, not relative)"),
-  }),
-  async execute(params, ctx) {
-    const filepath = path.isAbsolute(params.filePath)
-      ? params.filePath
-      : path.join(Instance.directory(), params.filePath)
+import { Instance } from '../project/instance'
+import { Filesystem } from '../util/filesystem'
+import { trimDiff } from './edit'
+import { assertExternalDirectory } from './external-directory'
 
-    await assertExternalDirectory(ctx, filepath)
+export const WriteTool = Tool.define('write', {
+	description: DESCRIPTION,
+	parameters: z.object({
+		content: z.string().describe('The content to write to the file'),
+		filePath: z
+			.string()
+			.describe(
+				'The absolute path to the file to write (must be absolute, not relative)'
+			),
+	}),
+	async execute(params, ctx) {
+		const filepath = path.isAbsolute(params.filePath)
+			? params.filePath
+			: path.join(Instance.directory(), params.filePath)
 
-    const exists = await Filesystem.exists(filepath)
-    const contentOld = exists ? await Filesystem.readText(filepath) : ""
+		await assertExternalDirectory(ctx, filepath)
 
-    const diff = trimDiff(createTwoFilesPatch(filepath, filepath, contentOld, params.content))
-    await ctx.ask({
-      permission: "edit",
-      patterns: [path.relative(Instance.directory(), filepath)],
-      always: ["*"],
-      metadata: { filepath, diff },
-    })
+		const exists = await Filesystem.exists(filepath)
+		const contentOld = exists ? await Filesystem.readText(filepath) : ''
 
-    await Filesystem.write(filepath, params.content)
+		const diff = trimDiff(
+			createTwoFilesPatch(filepath, filepath, contentOld, params.content)
+		)
+		await ctx.ask({
+			permission: 'edit',
+			patterns: [path.relative(Instance.directory(), filepath)],
+			always: ['*'],
+			metadata: { filepath, diff },
+		})
 
-    return {
-      title: path.relative(Instance.directory(), filepath),
-      metadata: { filepath, exists },
-      output: "Wrote file successfully.",
-    }
-  },
+		await Filesystem.write(filepath, params.content)
+
+		return {
+			title: path.relative(Instance.directory(), filepath),
+			metadata: { filepath, exists },
+			output: 'Wrote file successfully.',
+		}
+	},
 })

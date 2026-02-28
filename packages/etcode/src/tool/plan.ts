@@ -1,24 +1,25 @@
-import z from "zod"
-import { Tool } from "./tool"
-import { loadDescription } from "./description"
+import z from 'zod'
+import { loadDescription } from './description'
+import { Tool } from './tool'
 
-const EXIT_DESCRIPTION = loadDescription("plan-exit.txt")
+const EXIT_DESCRIPTION = loadDescription('plan-exit.txt')
 
-export const PlanExitTool = Tool.define("plan_exit", {
-  description: EXIT_DESCRIPTION,
-  parameters: z.object({}),
-  async execute(_params, ctx) {
-    await ctx.ask({
-      permission: "plan_exit",
-      patterns: ["*"],
-      always: ["*"],
-      metadata: {},
-    })
+export const PlanExitTool = Tool.define('plan_exit', {
+	description: EXIT_DESCRIPTION,
+	parameters: z.object({}),
+	async execute(_params, ctx) {
+		await ctx.ask({
+			permission: 'plan_exit',
+			patterns: ['*'],
+			always: ['*'],
+			metadata: {},
+		})
 
-    return {
-      title: "Switching to build agent",
-      output: "User approved switching to build agent. Wait for further instructions.",
-      metadata: {},
-    }
-  },
+		return {
+			title: 'Switching to build agent',
+			output:
+				'User approved switching to build agent. Wait for further instructions.',
+			metadata: {},
+		}
+	},
 })

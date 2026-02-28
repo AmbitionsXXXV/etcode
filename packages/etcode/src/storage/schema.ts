@@ -1,1 +1,7 @@
-export { SessionTable, MessageTable, PartTable, TodoTable } from "../session/session.sql"
+export {
+	MessageTable,
+	PartTable,
+	PermissionTable,
+	SessionTable,
+	TodoTable,
+} from '../session/session.sql'

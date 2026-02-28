@@ -51,9 +51,17 @@
         "noNoninteractiveElementInteractions": "off"
       },
       "style": {
+        "noNamespace": "off",
         "noExportedImports": "off",
         "useBlockStatements": "off",
-        "useConsistentTypeDefinitions": "off"
+        "useConsistentTypeDefinitions": "off",
+        "noNonNullAssertion": "off",
+        "noParameterProperties": "off",
+        "useConsistentMemberAccessibility": "off",
+        "useFilenamingConvention": "off",
+        "useForOf": "off",
+        "noNestedTernary": "off",
+        "useDefaultSwitchClause": "off"
       },
       "correctness": {
         "useImageSize": "off",
@@ -67,7 +75,15 @@
         "noDangerouslySetInnerHtml": "off"
       },
       "complexity": {
-        "noUselessLoneBlockStatements": "off"
+        "noUselessLoneBlockStatements": "off",
+        "noExcessiveCognitiveComplexity": "off"
+      },
+      "suspicious": {
+        "noExplicitAny": "off",
+        "noTemplateCurlyInString": "off",
+        "noEmptyBlockStatements": "off",
+        "noEvolvingTypes": "off",
+        "useAwait": "off"
       },
       "performance": {
         "noNamespaceImport": "off",

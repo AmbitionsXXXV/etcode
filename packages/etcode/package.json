@@ -1,46 +1,46 @@
 {
-	"name": "etcode",
-	"version": "0.1.0",
-	"type": "module",
-	"bin": {
-		"etcode": "./bin/etcode"
-	},
-	"exports": {
-		"./*": "./src/*.ts"
-	},
-	"scripts": {
-		"dev": "tsx src/index.ts",
-		"typecheck": "tsc --noEmit",
-		"test": "vitest run"
-	},
-	"dependencies": {
-		"@ai-sdk/anthropic": "^3.0.47",
-		"@ai-sdk/google": "^3.0.32",
-		"@ai-sdk/openai": "^3.0.35",
-		"@ai-sdk/openai-compatible": "^2.0.30",
-		"@etcode/util": "workspace:*",
-		"ai": "^6.0.103",
-		"better-sqlite3": "^12.6.2",
-		"diff": "^8.0.3",
-		"drizzle-orm": "^0.45.1",
-		"ink": "^6.8.0",
-		"ink-text-input": "^6.0.0",
-		"react": "^19.2.4",
-		"turndown": "^7.2.2",
-		"xdg-basedir": "^5.1.0",
-		"yargs": "^18.0.0",
-		"zod": "^4.3.6"
-	},
-	"devDependencies": {
-		"@types/better-sqlite3": "^7.6.13",
-		"@types/diff": "^8.0.0",
-		"@types/node": "^25.3.0",
-		"@types/react": "^19.2.14",
-		"@types/turndown": "^5.0.6",
-		"@types/yargs": "^17.0.35",
-		"drizzle-kit": "^0.31.9",
-		"tsx": "^4.21.0",
-		"typescript": "^5.9.3",
-		"vitest": "^4.0.18"
-	}
+  "name": "etcode",
+  "version": "0.1.0",
+  "type": "module",
+  "bin": {
+    "etcode": "./bin/etcode"
+  },
+  "exports": {
+    "./*": "./src/*.ts"
+  },
+  "scripts": {
+    "dev": "tsx src/index.ts",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@ai-sdk/anthropic": "^3.0.47",
+    "@ai-sdk/google": "^3.0.32",
+    "@ai-sdk/openai": "^3.0.35",
+    "@ai-sdk/openai-compatible": "^2.0.30",
+    "@etcode/util": "workspace:*",
+    "ai": "^6.0.103",
+    "better-sqlite3": "^12.6.2",
+    "diff": "^8.0.3",
+    "drizzle-orm": "^0.45.1",
+    "ink": "^6.8.0",
+    "ink-text-input": "^6.0.0",
+    "react": "^19.2.4",
+    "turndown": "^7.2.2",
+    "xdg-basedir": "^5.1.0",
+    "yargs": "^18.0.0",
+    "zod": "^4.3.6"
+  },
+  "devDependencies": {
+    "@types/better-sqlite3": "^7.6.13",
+    "@types/diff": "^8.0.0",
+    "@types/node": "^25.3.0",
+    "@types/react": "^19.2.14",
+    "@types/turndown": "^5.0.6",
+    "@types/yargs": "^17.0.35",
+    "drizzle-kit": "^0.31.9",
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.3",
+    "vitest": "^4.0.18"
+  }
 }

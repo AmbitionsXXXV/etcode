@@ -1,45 +1,41 @@
-import z from "zod"
+import z from 'zod'
 
 export abstract class NamedError extends Error {
-  abstract schema(): z.core.$ZodType
-  abstract toObject(): { name: string; data: unknown }
+	abstract schema(): z.core.$ZodType
+	abstract toObject(): { name: string; data: unknown }
 
-  static create<Name extends string, Data extends z.core.$ZodType>(
-    name: Name,
-    data: Data,
-  ) {
-    const schema = z.object({ name: z.literal(name), data })
-    const result = class extends NamedError {
-      static readonly Schema = schema
-      readonly name = name
+	static create<Name extends string, Data extends z.core.$ZodType>(
+		name: Name,
+		data: Data
+	) {
+		const schema = z.object({ name: z.literal(name), data })
+		const result = class extends NamedError {
+			static readonly Schema = schema
+			readonly name = name
+			readonly data: z.input<Data>
 
-      constructor(
-        public readonly data: z.input<Data>,
-        options?: ErrorOptions,
-      ) {
-        super(name, options)
-      }
+			constructor(data: z.input<Data>, options?: ErrorOptions) {
+				super(name, options)
+				this.data = data
+			}
 
-      static isInstance(input: unknown): input is InstanceType<typeof result> {
-        return (
-          input instanceof Error &&
-          (input as NamedError).name === name
-        )
-      }
+			static isInstance(input: unknown): input is InstanceType<typeof result> {
+				return input instanceof Error && (input as NamedError).name === name
+			}
 
-      schema() {
-        return schema
-      }
+			schema() {
+				return schema
+			}
 
-      toObject() {
-        return { name, data: this.data }
-      }
-    }
-    return result
-  }
+			toObject() {
+				return { name, data: this.data }
+			}
+		}
+		return result
+	}
 
-  static readonly Unknown = NamedError.create(
-    "UnknownError",
-    z.object({ message: z.string() }),
-  )
+	static readonly Unknown = NamedError.create(
+		'UnknownError',
+		z.object({ message: z.string() })
+	)
 }
