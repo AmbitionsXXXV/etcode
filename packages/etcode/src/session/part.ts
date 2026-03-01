@@ -50,11 +50,19 @@ export namespace Part {
 		snapshot: z.string().optional(),
 	})
 
+	export const CompactionPart = z.object({
+		type: z.literal('compaction'),
+		id: z.string(),
+		messageID: z.string(),
+		auto: z.boolean().default(false),
+	})
+
 	export const Info = z.discriminatedUnion('type', [
 		TextPart,
 		ToolPart,
 		StepStartPart,
 		StepFinishPart,
+		CompactionPart,
 	])
 	export type Info = z.infer<typeof Info>
 
@@ -78,6 +86,8 @@ export namespace Part {
 			return { type: 'step-start', snapshot: part.snapshot }
 		if (part.type === 'step-finish')
 			return { type: 'step-finish', snapshot: part.snapshot }
+		if (part.type === 'compaction')
+			return { type: 'compaction', auto: part.auto }
 		return { type: 'tool', tool: part.tool, callID: part.callID, state: part.state }
 	}
 
@@ -97,6 +107,12 @@ export namespace Part {
 				...base,
 				type: 'step-finish',
 				snapshot: data.snapshot as string | undefined,
+			}
+		if (data.type === 'compaction')
+			return {
+				...base,
+				type: 'compaction',
+				auto: (data.auto as boolean) ?? false,
 			}
 		return {
 			...base,
@@ -220,6 +236,34 @@ export namespace Part {
 					time_created: now,
 					time_updated: now,
 					data: toData(part) as Record<string, unknown>,
+				})
+				.run()
+		})
+		await Bus.publish(Event.Updated, part)
+		return part
+	}
+
+	export async function createCompaction(
+		_projectID: string,
+		input: { messageID: string; sessionID?: string; auto: boolean }
+	) {
+		const now = Date.now()
+		const id = Identifier.ascending('part')
+		const part: z.infer<typeof CompactionPart> = {
+			type: 'compaction',
+			id,
+			messageID: input.messageID,
+			auto: input.auto,
+		}
+		Database.use((db) => {
+			db.insert(PartTable)
+				.values({
+					id,
+					message_id: input.messageID,
+					session_id: input.sessionID ?? '',
+					time_created: now,
+					time_updated: now,
+					data: toData(part) as any,
 				})
 				.run()
 		})

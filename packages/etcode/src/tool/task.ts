@@ -6,7 +6,7 @@ const DESCRIPTION = loadDescription('task.txt')
 import z from 'zod'
 import { Agent } from '../agent/agent'
 import { Permission } from '../permission/permission'
-import { Message } from '../session/message'
+import { Part } from '../session/part'
 import { Session } from '../session/session'
 
 const parameters = z.object({
@@ -90,26 +90,45 @@ export const TaskTool = Tool.define('task', async (ctx) => {
 				metadata: { sessionId: session.id, model },
 			})
 
-			await Message.create(project.id, {
-				sessionID: session.id,
-				role: 'user',
-				content: params.prompt,
-			})
+			function cancelChild() {
+				const { cancel } = require('../session/prompt') as typeof import('../session/prompt')
+				cancel(session!.id)
+			}
+			ctx.abort.addEventListener('abort', cancelChild)
 
-			const output = [
-				`task_id: ${session.id} (for resuming to continue this task if needed)`,
-				'',
-				'<task_result>',
-				`Task "${params.description}" has been delegated to @${agent.name} agent.`,
-				`Prompt: ${params.prompt}`,
-				'(Agent loop execution pending - will be connected when the agent loop is implemented)',
-				'</task_result>',
-			].join('\n')
+			try {
+				const { Prompt } = await import('../session/prompt')
 
-			return {
-				title: params.description,
-				metadata: { sessionId: session.id, model },
-				output,
+				const result = await Prompt.prompt({
+					projectID: project.id,
+					sessionID: session.id,
+					content: params.prompt,
+					agent: agent.name,
+					model,
+				})
+
+				let text = ''
+				if (result) {
+					const parts = await Part.list(project.id, result.id)
+					const textPart = parts.findLast((p) => p.type === 'text')
+					if (textPart?.type === 'text') text = textPart.text
+				}
+
+				const output = [
+					`task_id: ${session.id} (for resuming to continue this task if needed)`,
+					'',
+					'<task_result>',
+					text || `Task "${params.description}" completed by @${agent.name} agent.`,
+					'</task_result>',
+				].join('\n')
+
+				return {
+					title: params.description,
+					metadata: { sessionId: session.id, model },
+					output,
+				}
+			} finally {
+				ctx.abort.removeEventListener('abort', cancelChild)
 			}
 		},
 	}

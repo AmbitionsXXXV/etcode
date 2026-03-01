@@ -22,6 +22,8 @@ export namespace Message {
 		sessionID: z.string(),
 		finish: z.string().optional(),
 		error: z.unknown().optional(),
+		summary: z.boolean().optional(),
+		agent: z.string().optional(),
 		tokens: z
 			.object({
 				input: z.number(),
@@ -53,6 +55,8 @@ export namespace Message {
 			role: 'assistant',
 			finish: msg.finish,
 			error: msg.error,
+			summary: msg.summary,
+			agent: msg.agent,
 			tokens: msg.tokens,
 			time: msg.time,
 		}
@@ -69,6 +73,8 @@ export namespace Message {
 			role: 'assistant',
 			finish: data.finish,
 			error: data.error,
+			summary: data.summary,
+			agent: data.agent,
 			tokens: data.tokens,
 			time: data.time,
 		}
@@ -78,7 +84,7 @@ export namespace Message {
 		_projectID: string,
 		input:
 			| { sessionID: string; role: 'user'; content: string }
-			| { sessionID: string; role: 'assistant' }
+			| { sessionID: string; role: 'assistant'; summary?: boolean; agent?: string }
 	) {
 		const now = Date.now()
 		const id = Identifier.ascending('msg')
@@ -86,7 +92,12 @@ export namespace Message {
 		const message: Info =
 			input.role === 'user'
 				? { ...base, role: 'user', content: input.content }
-				: { ...base, role: 'assistant' }
+				: {
+						...base,
+						role: 'assistant',
+						summary: input.summary,
+						agent: input.agent,
+					}
 
 		Database.use((db) => {
 			db.insert(MessageTable)

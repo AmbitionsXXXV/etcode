@@ -11,7 +11,10 @@ import { Message } from './message'
 import { Part } from './part'
 import { Processor } from './processor'
 import { Session } from './session'
+import { SessionCompaction } from './compaction'
+import { SessionStatus } from './status'
 import { SessionSummary } from './summary'
+import { SessionTitle } from './title'
 import { SystemPrompt } from './system'
 
 const log = Log.create('session.prompt')
@@ -31,6 +34,7 @@ export function cancel(sessionID: string) {
 		existing.abort()
 		delete controllers[sessionID]
 	}
+	SessionStatus.set(sessionID, 'idle')
 }
 
 async function resolveModel(agent: Agent.Info): Promise<Provider.Model> {
@@ -128,6 +132,21 @@ export async function toModelMessages(
 		}
 
 		if (msg.role === 'assistant') {
+			if (msg.summary) {
+				const parts = await Part.list(projectID, msg.id)
+				const textParts = parts.filter((p) => p.type === 'text')
+				if (textParts.length > 0) {
+					result.length = 0
+					result.push({
+						role: 'assistant',
+						content: textParts
+							.map((p) => (p.type === 'text' ? p.text : ''))
+							.join('\n'),
+					})
+				}
+				continue
+			}
+
 			const parts = await Part.list(projectID, msg.id)
 			if (parts.length === 0) continue
 
@@ -195,6 +214,10 @@ function hasPendingToolCalls(parts: Part.Info[]): boolean {
 	)
 }
 
+function hasPendingCompaction(parts: Part.Info[]): Part.Info | undefined {
+	return parts.find((p) => p.type === 'compaction')
+}
+
 export namespace Prompt {
 	export async function prompt(input: {
 		projectID: string
@@ -228,6 +251,7 @@ export namespace Prompt {
 		modelOverride?: { providerID: string; modelID: string }
 	}): Promise<Message.Info | undefined> {
 		const abort = start(input.sessionID)
+		SessionStatus.set(input.sessionID, 'busy')
 		let step = 0
 		let lastAssistant: Message.Info | undefined
 
@@ -255,6 +279,7 @@ export namespace Prompt {
 
 				if (lastAssistant && lastAssistant.role === 'assistant') {
 					const parts = await Part.list(input.projectID, lastAssistant.id)
+
 					if (
 						lastAssistant.finish &&
 						lastAssistant.finish !== 'tool-calls' &&
@@ -265,11 +290,62 @@ export namespace Prompt {
 						log.info('loop complete', { step, finish: lastAssistant.finish })
 						break
 					}
+
+					// Check for pending compaction
+					if (lastUser) {
+						const userParts = await Part.list(input.projectID, lastUser.id)
+						const compactionPart = hasPendingCompaction(userParts)
+						if (compactionPart && compactionPart.type === 'compaction') {
+							log.info('processing compaction', { sessionID: input.sessionID })
+							const compactionResult = await SessionCompaction.process({
+								projectID: input.projectID,
+								sessionID: input.sessionID,
+								messages,
+								abort,
+								auto: compactionPart.auto,
+							})
+							if (compactionResult === 'stop') break
+							continue
+						}
+					}
+				}
+
+				// Token overflow detection: trigger compaction if needed
+				if (
+					lastAssistant?.role === 'assistant' &&
+					!lastAssistant.summary &&
+					lastAssistant.tokens &&
+					SessionCompaction.isOverflow({ tokens: lastAssistant.tokens, model })
+				) {
+					log.info('context overflow, creating compaction', {
+						sessionID: input.sessionID,
+						tokens: lastAssistant.tokens,
+					})
+					await SessionCompaction.create({
+						projectID: input.projectID,
+						sessionID: input.sessionID,
+						auto: true,
+					})
+					continue
+				}
+
+				step++
+
+				// Async title generation on first step
+				if (step === 1) {
+					SessionTitle.generate({
+						projectID: input.projectID,
+						sessionID: input.sessionID,
+						messages,
+					}).catch((e) =>
+						log.warn('title generation failed', { error: String(e) })
+					)
 				}
 
 				const assistantMsg = await Message.create(input.projectID, {
 					sessionID: input.sessionID,
 					role: 'assistant',
+					agent: agent.name,
 				})
 
 				const modelMessages = await toModelMessages(input.projectID, messages)
@@ -302,7 +378,6 @@ export namespace Prompt {
 					abort,
 				})
 
-				step++
 				lastAssistant =
 					(await Message.get(input.projectID, input.sessionID, assistantMsg.id)) ??
 					undefined
@@ -317,6 +392,10 @@ export namespace Prompt {
 			})
 		} finally {
 			cancel(input.sessionID)
+			SessionCompaction.prune({
+				projectID: input.projectID,
+				sessionID: input.sessionID,
+			}).catch((e) => log.warn('prune failed', { error: String(e) }))
 			if (input.userMessageID) {
 				SessionSummary.summarize({
 					projectID: input.projectID,
